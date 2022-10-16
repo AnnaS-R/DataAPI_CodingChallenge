@@ -4,9 +4,15 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
-def create_message(db: Session, customer_id: int, dialog_id: int, message: schemas.MessageCreate):
-    db_message = models.Message(dialog_id=dialog_id, customer_id=customer_id, language=message.language,
-                                text=message.text)
+def create_message(
+    db: Session, customer_id: int, dialog_id: int, message: schemas.MessageCreate
+):
+    db_message = models.Message(
+        dialog_id=dialog_id,
+        customer_id=customer_id,
+        language=message.language,
+        text=message.text,
+    )
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
@@ -14,7 +20,9 @@ def create_message(db: Session, customer_id: int, dialog_id: int, message: schem
 
 
 def delete_dialog_messages(db: Session, dialog_id: int):
-    dialog_messages = db.query(models.Message).filter(models.Message.dialog_id == dialog_id).all()
+    dialog_messages = (
+        db.query(models.Message).filter(models.Message.dialog_id == dialog_id).all()
+    )
     if not dialog_messages:
         return False
     db.query(models.Message).filter(models.Message.dialog_id == dialog_id).delete()
@@ -23,8 +31,12 @@ def delete_dialog_messages(db: Session, dialog_id: int):
 
 
 def get_consented_messages(db: Session, language: str, customer_id: int):
-    messages = db.query(models.Message).join(models.Consent).filter(models.Consent.consent).order_by(
-        models.Message.id.desc())
+    messages = (
+        db.query(models.Message)
+        .join(models.Consent)
+        .filter(models.Consent.consent)
+        .order_by(models.Message.id.desc())
+    )
     if customer_id:
         messages = messages.filter(models.Message.customer_id == customer_id)
     if language:

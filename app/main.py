@@ -20,18 +20,32 @@ def get_db():
         db.close()
 
 
-@app.post("/data/{customer_id}/{dialog_id}", tags=["data"], response_model=schemas.Message)
-def create_message(customer_id: int, dialog_id: int, message_content: schemas.MessageBase,
-                   db: Session = Depends(get_db)):
+@app.post(
+    "/data/{customer_id}/{dialog_id}", tags=["data"], response_model=schemas.Message
+)
+def create_message(
+    customer_id: int,
+    dialog_id: int,
+    message_content: schemas.MessageBase,
+    db: Session = Depends(get_db),
+):
     """This endpoint is used to push each customer's input during their dialogue into the db."""
-    message = schemas.MessageCreate(customer_id=customer_id, dialog_id=dialog_id, language=message_content.language,
-                                    text=message_content.text)
-    db_message = crud.create_message(db=db, customer_id=customer_id, dialog_id=dialog_id, message=message)
+    message = schemas.MessageCreate(
+        customer_id=customer_id,
+        dialog_id=dialog_id,
+        language=message_content.language,
+        text=message_content.text,
+    )
+    db_message = crud.create_message(
+        db=db, customer_id=customer_id, dialog_id=dialog_id, message=message
+    )
     return db_message
 
 
 @app.post("/consents/{dialog_id}", tags=["consents"], response_model=schemas.Dialog)
-def create_consent(dialog_id: int, consent: schemas.ConsentField, db: Session = Depends(get_db)):
+def create_consent(
+    dialog_id: int, consent: schemas.ConsentField, db: Session = Depends(get_db)
+):
     """
     This endpoint is used to give consent for us to store and use the data of the dialog.
     If no dialog messages exist, this is interpreted as an error and the consent is not recorded.
@@ -43,7 +57,10 @@ def create_consent(dialog_id: int, consent: schemas.ConsentField, db: Session = 
         raise HTTPException(status_code=404, detail="Consent already recorded.")
     db_dialog_messages = crud.get_dialog_messages(db=db, dialog_id=dialog_id)
     if not db_dialog_messages:
-        raise HTTPException(status_code=400, detail="No messages with this dialog id have been recorded.")
+        raise HTTPException(
+            status_code=400,
+            detail="No messages with this dialog id have been recorded.",
+        )
     db_dialog = crud.create_consent(db=db, dialog=dialog)
     if not consent.consent:
         delete_attempt = crud.delete_dialog_messages(db=db, dialog_id=dialog_id)
@@ -53,20 +70,26 @@ def create_consent(dialog_id: int, consent: schemas.ConsentField, db: Session = 
 
 
 @app.get("/data/", tags=["data"], response_model=List[schemas.Message])
-def read_messages(language: Union[str, None] = None, customer_id: Union[int, None] = None,
-                  db: Session = Depends(get_db)):
+def read_messages(
+    language: Union[str, None] = None,
+    customer_id: Union[int, None] = None,
+    db: Session = Depends(get_db),
+):
     """
     This endpoint returns all the datapoints:
     - that match the query params (if any)
     - for which we have consent for
     - and sorted by most recent data first (sorted by message_id, which autoincrements)
     """
-    messages = crud.get_consented_messages(db=db, language=language, customer_id=customer_id)
+    messages = crud.get_consented_messages(
+        db=db, language=language, customer_id=customer_id
+    )
     print(messages)
     return messages
 
 
 # basic getters included for testing
+
 
 @app.get("/data/message/{message_id}", tags=["data"], response_model=schemas.Message)
 def read_message(message_id: int, db: Session = Depends(get_db)):
