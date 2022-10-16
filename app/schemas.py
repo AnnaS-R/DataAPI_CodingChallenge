@@ -1,3 +1,4 @@
+"""Defines the Pydantic models (valid data shape) for our SQLAlchemy models. ."""
 from typing import List
 from pydantic import BaseModel
 

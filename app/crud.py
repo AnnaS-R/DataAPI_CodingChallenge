@@ -1,3 +1,4 @@
+"""Reusable functions to interact with the data in the database."""
 from sqlalchemy.orm import Session
 
 from . import models, schemas

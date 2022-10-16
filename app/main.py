@@ -32,9 +32,11 @@ def create_message(customer_id: int, dialog_id: int, message_content: schemas.Me
 
 @app.post("/consents/{dialog_id}", tags=["consents"], response_model=schemas.Dialog)
 def create_consent(dialog_id: int, consent: schemas.ConsentField, db: Session = Depends(get_db)):
-    """ This endpoint is used to give consent for us to store and use the data of the dialog.
+    """
+    This endpoint is used to give consent for us to store and use the data of the dialog.
     If no dialog messages exist, this is interpreted as an error and the consent is not recorded.
-    Consent for a dialog cannot be overwritten"""
+    Consent for a dialog cannot be overwritten.
+    """
     dialog = schemas.ConsentCreate(dialog_id=dialog_id, consent=consent.consent)
     db_consent = crud.get_consent(db=db, dialog_id=dialog_id)
     if db_consent:

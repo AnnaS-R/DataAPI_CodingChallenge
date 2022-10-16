@@ -1,3 +1,4 @@
+"""Defines the database models for our data storage. """
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
