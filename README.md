@@ -17,18 +17,22 @@ customer inputs (messages) and one containing the consents for the dialogs (cons
 
 
 ##### Notes
+- I am assuming the dialog id is unique 
+(because the ```POST /consents/:dialogId``` does not take a customer id as an argument)
 - I chose to sort the customer inputs by recency using an auto-incremented message id, 
 alternatively a timestamp could be used.
 - The payload for the endpoint ```POST /consents/:dialogId``` is _{"consent": true/false}_ not only (as written in the problem statement) _true/false_ 
 
 #### Run the application
+From inside the project folder follow the steps below:
 
+Activate virtual env: ``` python -m venv . ```  and ``` source bin/activate ``` 
 Install requirements: ```pip install -r requirements.txt```\
-Run api: ``` python -m uvicorn app.main:app --reload ``` \
+Run api: ``` python -m uvicorn app.main:app --reload ``` 
 
 #### Test the application
 
 To view the  automatically generated interactive API documentation from FastAPI (Swagger UI) visit:
  ``` http://localhost:8000/docs``` \
-Run tests: ``` pytest app/tests.py ``` 
+To run the tests: ``` pytest app/tests.py ``` 
 
